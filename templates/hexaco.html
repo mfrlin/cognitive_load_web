@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}Cognitive Load{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>Hexaco test</h1>
+</div>
+<div class="col-md-4">
+    <p>Enter code to start solving:</p>
+    {{ wtf.quick_form(form) }}
+</div>
+{% endblock %}

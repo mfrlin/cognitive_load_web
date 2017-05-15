@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}Cognitive Load{% endblock %}
+
+{% block page_content %}
+    <p>Answer 1: {{ session.answer_1 }}</p>
+    <p>Answer 2: {{ session.answer_2 }}</p>
+    <p>Answer 3: {{ session.answer_3 }}</p>
+{% endblock %}
