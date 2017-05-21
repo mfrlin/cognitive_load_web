@@ -1,0 +1,1 @@
+SECRET_KEY = 'choose a secret key'
