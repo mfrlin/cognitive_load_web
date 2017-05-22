@@ -1,10 +1,15 @@
 {% extends "base.html" %}
-{% import "bootstrap/wtf.html" as wtf %}
 
 {% block title %}Cognitive Load{% endblock %}
-
 {% block page_content %}
-    <p>Answer 1: {{ session.answer_1 }}</p>
-    <p>Answer 2: {{ session.answer_2 }}</p>
-    <p>Answer 3: {{ session.answer_3 }}</p>
+    <h1> Tvoj ključ je: <b>{{ ident }}</b></h1>
+    {% if answers is not none %}
+        <ol>
+        {% for answer in answers %}
+            <li>{{ answer }}</li>
+        {% endfor %}
+        </ol>
+    {% else %}
+        <h2>Ni podatkov za ta ključ.</h2>
+    {% endif %}
 {% endblock %}

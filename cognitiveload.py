@@ -1,14 +1,23 @@
+import string
+import random
+
 from flask import Flask, render_template, session, flash, redirect, url_for
 from flask_bootstrap import Bootstrap
-from flask.ext.wtf import Form
-from wtforms import PasswordField, SubmitField
+from flask.ext.wtf import FlaskForm
+from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.exc import IntegrityError
 
-from config import SECRET_KEY
+from config import SECRET_KEY, SQLALCHEMY_DATABASE_URI
 
 app = Flask(__name__)
 app.secret_key = SECRET_KEY
+app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
 bootstrap = Bootstrap(app)
+
+db = SQLAlchemy(app)
 
 
 @app.route('/')
@@ -18,48 +27,69 @@ def index():
 
 @app.route('/hexaco', methods=['GET', 'POST'])
 def hexaco():
-    form = HexacoLoginForm()
+    session['answers'] = ''
+    form = HexacoSearchForm()
     if form.validate_on_submit():
-        if form.password.data == 'cognitiveload':
-            session['validated'] = True
-            return redirect(url_for('hexaco_questions', question_number=1))
-        else:
-            flash('Invalid code.')
+        return redirect(url_for('hexaco_answers', ident=form.ident.data))
     return render_template('hexaco.html', form=form)
 
 
 @app.route('/hexaco/<int:question_number>', methods=['GET', 'POST'])
 def hexaco_questions(question_number):
     if question_number > len(QUESTIONS):
-        return redirect(url_for('hexaco_answers'))
+        while True:
+            try:
+                r = Result(ident=generate_ident(), answers=session['answers'])
+                db.session.add(r)
+                db.session.commit()
+            except IntegrityError:
+                db.session.rollback()
+                continue
+            break
+        return redirect(url_for('hexaco_answers', ident=r.ident))
     form = HexacoQuestionForm()
     if form.validate_on_submit():
-        for i, button in enumerate([form.one, form.two, form.three, form.four, form.five]):
+        for i, button in enumerate([form.one, form.two, form.three, form.four, form.five], start=1):
             if button.data:
-                session['answer_{}'.format(question_number)] = i + 1
+                session['answers'] = session['answers'] + str(i)
                 break
         return redirect(url_for('hexaco_questions', question_number=question_number + 1))
 
     question = QUESTIONS[question_number]
-    return render_template('hexaco_questions.html', question=question, form=form)
+    return render_template('hexaco_questions.html', question=question, form=form, question_number=question_number)
 
 
-@app.route('/hexaco/answers')
-def hexaco_answers():
-    return render_template('hexaco_answers.html')
+@app.route('/hexaco/answers/<ident>')
+def hexaco_answers(ident):
+    try:
+        r = Result.query.filter_by(ident=ident).one()
+        answers = list(r.answers)
+    except NoResultFound:
+        answers = None
+    return render_template('hexaco_answers.html', ident=ident, answers=answers)
 
 
-class HexacoLoginForm(Form):
-    password = PasswordField('Code', validators=[DataRequired()])
-    submit = SubmitField('Start')
+class HexacoSearchForm(FlaskForm):
+    ident = StringField('Ključ', validators=[DataRequired()])
+    submit = SubmitField('Prikaži rezultate')
 
 
-class HexacoQuestionForm(Form):
+class HexacoQuestionForm(FlaskForm):
     one = SubmitField(label='se močno ne strinjam')
     two = SubmitField(label='se ne strinjam')
     three = SubmitField(label='sem nevtralen')
     four = SubmitField(label='se strinjam')
     five = SubmitField(label='se močno strinjam')
+
+
+class Result(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    ident = db.Column(db.String(5), index=True, unique=True)
+    answers = db.Column(db.String(119), nullable=True)
+
+
+def generate_ident():
+    return ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(5))
 
 QUESTIONS = {
     1: 'Če bi obiskal umetnostno galerijo, bi se precej dolgočasil.',
@@ -88,7 +118,7 @@ QUESTIONS = {
     24: 'Menim, da si zaslužim več spoštovanja kot povprečna oseba.',
     25: 'Če bi imel priložnost, bi šel na koncert klasične glasbe.',
     26: 'Ko delam, imam včasih težave zaradi svoje neorganiziranosti.',
-    27: 'Moj odnos do ljudi, ki so z mano slabo ravnali, je &quot;odpusti in pozabi&quot;.',
+    27: 'Moj odnos do ljudi, ki so z mano slabo ravnali, je "odpusti in pozabi".',
     28: 'Čutim, da sem nepriljubljena oseba.',
     29: 'Fizičnih nevarnosti se zelo bojim.',
     30: 'Če hočem nekaj od osebe, se bom smejal njenim najslabšim šalam.',

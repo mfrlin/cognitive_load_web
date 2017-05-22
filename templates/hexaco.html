@@ -6,9 +6,14 @@
 {% block page_content %}
 <div class="page-header">
     <h1>Hexaco test</h1>
+    <p>Na naslednjih straneh boste našli niz stavkov o vas. Prosimo, da preberete vsak stavek in ocenite kako močno se z njim strinjate ali ne strinjate.
+        Prosimo, da odgovorite na vsak stavek, tudi če niste popolnoma prepričani o svojem odgovoru.</p>
+
 </div>
+<a href="{{ url_for('hexaco_questions', question_number=1) }}" class="btn btn-success">Začni!</a>
+<hr>
 <div class="col-md-4">
-    <p>Enter code to start solving:</p>
+    <h3>Poišči rezultate</h3>
     {{ wtf.quick_form(form) }}
 </div>
 {% endblock %}
