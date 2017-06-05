@@ -2,7 +2,6 @@
 
 {% block title %}Cognitive Load{% endblock %}
 {% block page_content %}
-    <h1> Tvoj ključ je: <b>{{ ident }}</b></h1>
     {% if answers is not none %}
         <ol>
         {% for answer in answers %}
@@ -10,6 +9,6 @@
         {% endfor %}
         </ol>
     {% else %}
-        <h2>Ni podatkov za ta ključ.</h2>
+        <h2>Ni podatkov.</h2>
     {% endif %}
 {% endblock %}

@@ -16,6 +16,8 @@ app = Flask(__name__)
 app.secret_key = SECRET_KEY
 app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
 bootstrap = Bootstrap(app)
+login_manager = LoginManager()
+login_manager.init_app(app)
 
 db = SQLAlchemy(app)
 
@@ -28,25 +30,14 @@ def index():
 @app.route('/hexaco', methods=['GET', 'POST'])
 def hexaco():
     session['answers'] = ''
-    form = HexacoSearchForm()
-    if form.validate_on_submit():
-        return redirect(url_for('hexaco_answers', ident=form.ident.data))
-    return render_template('hexaco.html', form=form)
+    return render_template('hexaco.html')
 
 
 @app.route('/hexaco/<int:question_number>', methods=['GET', 'POST'])
 def hexaco_questions(question_number):
     if question_number > len(QUESTIONS):
-        while True:
-            try:
-                r = Result(ident=generate_ident(), answers=session['answers'])
-                db.session.add(r)
-                db.session.commit()
-            except IntegrityError:
-                db.session.rollback()
-                continue
-            break
-        return redirect(url_for('hexaco_answers', ident=r.ident))
+        # TODO: save hexaco results to user
+        return redirect(url_for('answers'))
     form = HexacoQuestionForm()
     if form.validate_on_submit():
         for i, button in enumerate([form.one, form.two, form.three, form.four, form.five], start=1):
@@ -59,14 +50,10 @@ def hexaco_questions(question_number):
     return render_template('hexaco_questions.html', question=question, form=form, question_number=question_number)
 
 
-@app.route('/hexaco/answers/<ident>')
-def hexaco_answers(ident):
-    try:
-        r = Result.query.filter_by(ident=ident).one()
-        answers = list(r.answers)
-    except NoResultFound:
-        answers = None
-    return render_template('hexaco_answers.html', ident=ident, answers=answers)
+@app.route('/answers')
+def answers(ident):
+    # TODO: get answers from user
+    return render_template('answers.html', answers=answers)
 
 
 class HexacoSearchForm(FlaskForm):
@@ -82,10 +69,11 @@ class HexacoQuestionForm(FlaskForm):
     five = SubmitField(label='se močno strinjam')
 
 
-class Result(db.Model):
+class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(100), index=True, unique=True)
     ident = db.Column(db.String(5), index=True, unique=True)
-    answers = db.Column(db.String(119), nullable=True)
+    hexaco = db.Column(db.String(119), nullable=True)
 
 
 def generate_ident():
