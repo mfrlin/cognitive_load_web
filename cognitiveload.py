@@ -74,7 +74,6 @@ def hexaco():
 @app.route('/hexaco/<int:question_number>', methods=['GET', 'POST'])
 @login_required
 def hexaco_questions(question_number):
-    print('MARTIN0', session['answers'])
     if question_number > len(QUESTIONS):
         g.user.hexaco = '|'.join(str(session['answers'][str(i)]) for i in range(1, len(QUESTIONS) + 1))
         db.session.add(g.user)
