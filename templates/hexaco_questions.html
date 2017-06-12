@@ -7,9 +7,11 @@
 <div class="page-header">
     <h1>Hexaco test</h1>
 </div>
-<div class="col-md-8">
+<div class="col-md-12">
     <h3>{{ question_number }}/60</h3>
     <p>{{ question }}</p>
-    {{ wtf.quick_form(form) }}
+    <div class="input-group-btn" role="group">
+        {{ wtf.quick_form(form) }}
+    </div>
 </div>
 {% endblock %}

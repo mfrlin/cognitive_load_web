@@ -1,14 +1,14 @@
 import string
 import random
 
-from flask import Flask, render_template, session, flash, redirect, url_for
+from flask import Flask, render_template, session, flash, redirect, url_for, g
 from flask_bootstrap import Bootstrap
 from flask.ext.wtf import FlaskForm
+from flask.ext.login import LoginManager
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.orm.exc import NoResultFound
-from sqlalchemy.exc import IntegrityError
+from flask_login import login_user, logout_user, current_user, login_required
 
 from config import SECRET_KEY, SQLALCHEMY_DATABASE_URI
 
@@ -18,31 +18,74 @@ app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
 bootstrap = Bootstrap(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
+login_manager.login_view = 'index'
+login_manager.login_message = 'Za obisk te strani se je potrebno vpisati.'
 
 db = SQLAlchemy(app)
 
 
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+
+@app.before_request
+def before_request():
+    g.user = current_user
+
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
+
+
+@app.route('/login', methods=['POST'])
+def login():
+    if g.user is not None and g.user.is_authenticated:
+        return redirect(url_for('index'))
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        if user is not None:
+            login_user(user, remember=True)
+        else:
+            u = User(email=form.email.data)
+            db.session.add(u)
+            db.session.commit()
+            login_user(u, remember=True)
+            # flash('Neobstoječ email.')
+    return redirect(url_for('index'))
+
+
 @app.route('/')
 def index():
-    return render_template('index.html')
+    form = LoginForm()
+    return render_template('index.html', form=form)
 
 
 @app.route('/hexaco', methods=['GET', 'POST'])
+@login_required
 def hexaco():
-    session['answers'] = ''
+    session['answers'] = {}
     return render_template('hexaco.html')
 
 
 @app.route('/hexaco/<int:question_number>', methods=['GET', 'POST'])
+@login_required
 def hexaco_questions(question_number):
+    print('MARTIN0', session['answers'])
     if question_number > len(QUESTIONS):
-        # TODO: save hexaco results to user
+        g.user.hexaco = '|'.join(str(session['answers'][str(i)]) for i in range(1, len(QUESTIONS) + 1))
+        db.session.add(g.user)
+        db.session.commit()
         return redirect(url_for('answers'))
     form = HexacoQuestionForm()
     if form.validate_on_submit():
         for i, button in enumerate([form.one, form.two, form.three, form.four, form.five], start=1):
             if button.data:
-                session['answers'] = session['answers'] + str(i)
+                session['answers'][str(question_number)] = i
+                session.modified = True
                 break
         return redirect(url_for('hexaco_questions', question_number=question_number + 1))
 
@@ -51,14 +94,46 @@ def hexaco_questions(question_number):
 
 
 @app.route('/answers')
-def answers(ident):
-    # TODO: get answers from user
-    return render_template('answers.html', answers=answers)
+@login_required
+def answers():
+    def r(i):
+        return [0, 5, 4, 3, 2, 1][i]
+    scores = {}
+    if g.user.hexaco is not None:
+        ans = list(map(int, g.user.hexaco.split('|')))
+        ans = [0] + ans
+        scores = {
+            'Odkritost': (ans[6] + r(ans[30]) + ans[54]) / 3,
+            'Postenost': (r(ans[12]) + ans[36] + ans[60]) / 3,
+            'OgibanjePohlepu': (ans[18] + r(ans[42])) / 2,
+            'Skromnost': (r(ans[24]) + r(ans[48])) / 2,
+            'Bojecnost': (ans[5] + ans[29] + r(ans[53])) / 3,
+            'Tesnobnost': (ans[11] + r(ans[35])) / 2,
+            'Odvisnost': (ans[17] + r(ans[41])) / 2,
+            'Sentimentalnost': (ans[23] + ans[47] + r(ans[59])) / 3,
+            'SocialnaSamozavest': (ans[4] + r(ans[28]) + r(ans[52])) / 3,
+            'SocialniPogum': (r(ans[10]) + ans[34] + ans[58]) / 3,
+            'Druzabnost': (ans[16] + ans[40]) / 2,
+            'Zivahnost': (ans[22] + r(ans[46])) / 2,
+            'Odpuscanje': (ans[3] + ans[27]) / 2,
+            'Neznost': (r(ans[9]) + ans[33] + ans[51]) / 3,
+            'Fleksibilnost': (r(ans[15]) + ans[39] + r(ans[57])) / 3,
+            'Potrpezljivost': (r(ans[21]) + ans[45]) / 2,
+            'Organiziranost': (ans[2] + r(ans[26])) / 2,
+            'Marljivost': (ans[8] + r(ans[32])) / 2,
+            'Perfekcionizem': (r(ans[14]) + ans[38] + ans[50]) / 3,
+            'Preudarnost': (r(ans[20]) + r(ans[44]) + r(ans[56])) / 3,
+            'UzivanjeVEstetiki': (r(ans[1]) + ans[25]) / 2,
+            'Vedozeljnost': (ans[7] + r(ans[31])) / 2,
+            'Ustvarjalnost': (ans[13] + ans[37] + r(ans[49])) / 3,
+            'Nekonvencionalnost': (r(ans[19]) + ans[43] + r(ans[55])) / 3,
+        }
+    return render_template('answers.html', scores=scores)
 
 
-class HexacoSearchForm(FlaskForm):
-    ident = StringField('Ključ', validators=[DataRequired()])
-    submit = SubmitField('Prikaži rezultate')
+class LoginForm(FlaskForm):
+    email = StringField('Email', validators=[DataRequired()])
+    submit = SubmitField('Prijavi me')
 
 
 class HexacoQuestionForm(FlaskForm):
@@ -74,6 +149,21 @@ class User(db.Model):
     email = db.Column(db.String(100), index=True, unique=True)
     ident = db.Column(db.String(5), index=True, unique=True)
     hexaco = db.Column(db.String(119), nullable=True)
+
+    @property
+    def is_authenticated(self):
+        return True
+
+    @property
+    def is_active(self):
+        return True
+
+    @property
+    def is_anonymous(self):
+        return False
+
+    def get_id(self):
+        return str(self.id)
 
 
 def generate_ident():

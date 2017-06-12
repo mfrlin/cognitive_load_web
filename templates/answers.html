@@ -2,13 +2,213 @@
 
 {% block title %}Cognitive Load{% endblock %}
 {% block page_content %}
-    {% if answers is not none %}
-        <ol>
-        {% for answer in answers %}
-            <li>{{ answer }}</li>
-        {% endfor %}
-        </ol>
-    {% else %}
-        <h2>Ni podatkov.</h2>
-    {% endif %}
+    <h3>Poštenost-ponižnost</h3>
+    <p>Osebe, ki dosegajo visoke rezultate na lestvici poštenosti-ponižnosti, se izogibajo
+manipuliranju z drugimi za doseganje lastnih ciljev, redko kršijo pravila, se ne zanimajo
+za razkošje in premoženje in nimajo občutka, da jim stvari ali pa določen socialni status
+pripada sam po sebi. Nasprotno osebe z nizkimi rezultati na tej lestvici laskajo drugim,
+da dosežejo svoje, kršijo pravila, da se okoristijo, motivirajo jih materialne dobrine in se
+sami sebi zdijo pomembni.</p>
+    <ul>
+        <li>
+            <h4>Odkritost: {{ '%0.2f' % scores.get('Odkritost', 0) }}</h4>
+            <p>Poddimenzija odkritost meri nagnjenost k iskrenosti in pristnosti v medosebnih
+        odnosih. Manj odkriti posamezniki laskajo drugim, da od njih nekaj pridobijo, medtem
+        ko bolj odkriti komunicirajo brez skritih namenov.</p>
+        </li>
+        <li>
+            <h4>Poštenost: {{ '%0.2f' % scores.get('Postenost', 0) }}</h4>
+            <p>Poddimenzija poštenost meri tendenco k izogibanju prevaram in podkupovanju.
+Manj pošteni so pripravljeni krasti ali goljufati, da dosežejo svoje, medtem ko bolj
+pošteni ne želijo izkoriščati drugih.</p>
+        </li>
+        <li>
+            <h4>Ogibanje pohlepu: {{ '%0.2f' % scores.get('OgibanjePohlepu', 0) }}</h4>
+            <p>Poddimenzija ogibanje pohlepu meri (ne)zanimanje za prestiž, premoženje in visok
+socialni status. Posamezniki z nizkimi rezultati želijo razkazovati in javno uživati v
+materialnih dobrinah in privilegijih, medtem ko ljudi z visokimi rezultati denar in socialni
+status ne motivira.</p>
+        </li>
+        <li>
+            <h4>Skromnost: {{ '%0.2f' % scores.get('Skromnost', 0) }}</h4>
+            <p>Poddimenzija skromnost meri nagnjenost k ponižnosti in nezahtevnosti. Osebe z
+nizkimi vrednostmi na tej lestvici se čutijo vzvišene nad drugimi ter verjamejo, da jim
+pripadajo privilegiji, ki drugim ne. Osebe z visokimi vrednostmi na tej lestvici se doživljajo
+kot običajni ljudje, ki ne zahtevajo posebne obravnave.</p>
+        </li>
+    </ul>
+    <h3>Emocionalnost</h3>
+    <p>Osebe z visokimi vrednostmi na lestvici emocionalnosti se bojijo fizičnih nevarnosti,
+so tesnobne v stresnih situacijah in pogosto čutijo potrebo po čustveni podpori drugih
+ljudi, so empatične in sentimentalne v odnosih z drugimi. Po drugi strani se osebe z
+nizkimi vrednostmi na tej lestvici ne obremenjujejo s fizičnimi nevarnostmi, so redko
+zaskrbljene tudi v zelo stresnih situacijah, nimajo potrebe, da bi svoje skrbi delile z
+drugimi in imajo do drugih ljudi čustveno distanco.</p>
+    <ul>
+        <li>
+            <h4>Boječnost: {{ '%0.2f' % scores.get('Bojecnost', 0) }}</h4>
+            <p>Boječnost meri nagnjenost k doživljanju strahu. Osebe z nizkimi rezultati se ne bojijo
+poškodb, so pogumne, močne in neobčutljive na bolečino, medtem ko se osebe z
+visokimi rezultati poskušajo na vsak način izogniti fizični bolečini.</p>
+        </li>
+        <li>
+            <h4>Tesnobnost: {{ '%0.2f' % scores.get('Tesnobnost', 0) }}</h4>
+            <p>Tesnobnost meri nagnjenost k zaskrbljenosti v različnih kontekstih. Osebe z nizkimi
+vrednostmi doživljajo malo stresa v odziv na težave, medtem ko so osebe z visokimi
+rezultati pogosto preobremenjene tudi z relativno majhnimi težavami.</p>
+        </li>
+        <li>
+            <h4>Odvisnost: {{ '%0.2f' % scores.get('Odvisnost', 0) }}</h4>
+            <p>Odvisnost meri potrebo po čustveni podpori drugih ljudi. Osebe z nizkimi
+vrednostmi so samozavestne in samozadostne ter nerade sprejmejo pomoč drugih,
+osebe z visokimi vrednostmi pa želijo svoje težave deliti z drugimi, ki jim nudijo
+spodbudo in podporo.</p>
+        </li>
+        <li>
+            <h4>Sentimentalnost: {{ '%0.2f' % scores.get('Sentimentalnost', 0) }}</h4>
+            <p>Sentimentalnost meri nagnjenost k oblikovanju močnih čustvenih vezi z drugimi.
+Osebe z nizkimi rezultati se z lahkoto poslavljajo od drugih ter se ne ukvarjajo s skrbmi
+drugih ljudi, osebe z visokimi rezultati pa čutijo močne čustvene vezi in so empatične do
+čustev soljudi.</p>
+        </li>
+    </ul>
+    <h3>Ekstravertnost</h3>
+    <p>Ekstravertni ljudje se počutijo dobro v svoji koži, so samozavestni v vodenju in
+nastopanju, uživajo v druženju z drugimi, se lahko navdušijo in imajo veliko energije.
+Osebe z manj izraženo ekstravertnostjo se doživljajo kot nepriljubljene, v družbi
+(predvsem pa v središču pozornosti) jim je neprijetno, v družabnih aktivnostih ne uživajo
+in delujejo manj živahni in optimistični.
+</p>
+    <ul>
+        <li>
+            <h4>Socialna samozavest: {{ '%0.2f' % scores.get('SocialnaSamozavest', 0) }}</h4>
+            Socialna samozavest meri tendenco k pozitivnemu mnenju o sebi v družabnih
+okoljih. Osebe z visokimi rezultati so načeloma zadovoljne same s sabo in se imajo za
+všečne posameznike, medtem ko se osebe z nizkimi rezultati počutijo manjvredno in se
+doživljajo kot nepriljubljene.
+</p>
+        </li>
+        <li>
+            <h4>Socialni pogum: {{ '%0.2f' % scores.get('SocialniPogum', 0) }}</h4>
+            <p>Socialni pogum meri posameznikovo samozavest v socialnih situacijah. Osebe z
+nizko izraženo to poddimenzijo se v središču pozornosti počutijo neprijetno, medtem ko
+osebe z visoko izraženim socialnim pogumom brez težav navezujejo stike s tujci in javno
+spregovorijo.</p>
+        </li>
+        <li>
+            <h4>Družabnost: {{ '%0.2f' % scores.get('Druzabnost', 0) }}</h4>
+            <p>Družabnost meri nagnjenost k socialnim interakcijam, vključevanju v pogovor in
+uživanje v zabavah. Nizko družabne osebe so raje same in se ogibajo pogovoru, medtem
+ko visoko družabne osebe uživajo v govorjenju in zabavi z drugimi ljudmi.</p>
+        </li>
+        <li>
+            <h4>Živahnost: {{ '%0.2f' % scores.get('Zivahnost', 0) }}</h4>
+            <p>Živahnost meri energijo in navdušenje. Manj živahne osebe so redko vedre in
+dinamične, medtem ko so bolj živahne pogosto optimistične in dobro razpoložene.</p>
+        </li>
+    </ul>
+    <h3>Sprejemljivost</h3>
+    <p>Osebe z visoko izraženo sprejemljivostjo hitro odpuščajo, ne obsojajo drugih,
+sprejemajo kompromise, rade sodelujejo z drugimi in ohranijo mirno kri v konfliktnih
+situacijah. Osebe z nizko izraženo sprejemljivostjo pa so zamerljive, kritične do napak
+drugih, trmasto vztrajajo pri svojem in se hitro razjezijo.
+</p>
+    <ul>
+        <li>
+            <h4>Odpuščanje: {{ '%0.2f' % scores.get('Odpuscanje', 0) }}</h4>
+            <p>Odpuščanje meri pripravljenost na zaupanje drugim in naklonjenost ljudem, ki so
+nam morda škodovali. Osebe z nizkimi rezultati zamerijo, osebe z visokimi rezultati pa
+so pripravljene ponovno zaupati drugim in vzpostaviti prijateljstvo tudi po tem, ko je
+nekdo z njimi grdo ravnal.
+</p>
+        </li>
+        <li>
+            <h4>Nežnost: {{ '%0.2f' % scores.get('Neznost', 0) }}</h4>
+            <p>Nežnost meri tendenco k blagemu in popustljivemu obravnavanju drugih ljudi.
+Osebe z nizkimi rezultati so do drugih kritične in stroge, osebe z visokimi rezultati pa
+nerade ostro obsojajo druge.</p>
+        </li>
+        <li>
+            <h4>Fleksibilnost: {{ '%0.2f' % scores.get('Fleksibilnost', 0) }}</h4>
+            <p>Fleksibilnost meri pripravljenost na sprejemanje kompromisov in sodelovanje z
+drugimi. Manj fleksibilni so trmasti in se pogosto prepirajo, bolj fleksibilni pa se izogibajo
+konfliktom ter se prilagodijo predlogom in željam drugih.</p>
+        </li>
+        <li>
+            <h4>Potrpežljivost: {{ '%0.2f' % scores.get('Potrpezljivost', 0) }}</h4>
+            <p>Potrpežljivost meri tendenco, da ostanemo mirni in se ne razjezimo. Manj
+potrpežljivi se hitro razjezijo, medtem ko imajo bolj potrpežljivi visok prag za doživljanje
+in izražanje jeze.
+</p>
+        </li>
+    </ul>
+    <h3>Vestnost</h3>
+    <p>Vestne osebe so organizirane tako v času kot v svojem fizičnem okolju,
+disciplinirane, delavne, postavljajo si cilje in se trudijo, da jih dosežejo, stremijo k
+natančnosti v svojih nalogah in so previdne v sprejemanju odločitev. Nizko vestne osebe
+pa se ne ukvarjajo z vzpostavljanjem reda in urniki, izogibajo se zahtevnim nalogam, so
+hitro zadovoljne s svojim delom, čeprav vsebuje napake, odločajo pa se impulzivno in z
+malo premisleka.</p>
+    <ul>
+        <li>
+            <h4>Organiziranost: {{ '%0.2f' % scores.get('Organiziranost', 0) }}</h4>
+            <p>Organiziranost meri nagnjenost k redu in urejenosti fizičnega okolja. Nizko
+organizirane osebe so površne in spontane, medtem ko imajo visoko organizirane osebe
+vedno vse pospravljeno in k nalogam pristopajo strukturirano. </p>
+        </li>
+        <li>
+            <h4>Marljivost: {{ '%0.2f' % scores.get('Marljivost', 0) }}</h4>
+            <p>Marljivost meri nagnjenost k trdemu delu. Osebe z nizkimi rezultati imajo malo
+samodiscipline in niso močno motivirane, osebe z visokimi rezultati pa imajo močno
+delovno etiko in se močno trudijo.</p>
+        </li>
+        <li>
+            <h4>Perfekcionizem: {{ '%0.2f' % scores.get('Perfekcionizem', 0) }}</h4>
+            <p>Perfekcionizem meri tendenco k natančnosti in obremenjenosti s podrobnostmi.
+Manj perfekcionistični posamezniki tolerirajo napake in lahko spregledajo podrobnosti,
+bolj perfekcionistični pa natančno pregledajo in popravijo vse napake in iščejo
+potencialne izboljšave.
+</p>
+        </li>
+        <li>
+            <h4>Preudarnost: {{ '%0.2f' % scores.get('Preudarnost', 0) }}</h4>
+            <p>Preudarnost meri tendenco k namerni kontroli impulzov. Osebe z nizkimi
+vrednostmi so impulzivne in se ne ukvarjajo s posledicami, osebe z visokimi vrednostmi
+pa premislijo vse možnosti, so previdne v svojih odločitvah in imajo dobro samokontrolo.</p>
+        </li>
+    </ul>
+     <h3>Odprtost za izkušnje</h3>
+    <p>Odprtost za izkušnje kaže na nagnjenost k radovednosti in odkrivanju novega,
+uživanju v lepoti in estetiki umetnosti in narave, živahni domišljiji, zanimanju za vse, kar
+je nenavadno in novo. Ljudje, ki so manj odprti za izkušnje, ne kažejo zanimanja za
+umetnost, znanje, nova odkritja, izogibajo se umetniškemu ustvarjanju, nove, radikalne
+ali nekonvencionalne ideje pa jih odbijajo. </p>
+    <ul>
+        <li>
+            <h4>Uživanje v estetiki: {{ '%0.2f' % scores.get('UzivanjeVEstetiki', 0) }}</h4>
+            <p>Uživanje v estetiki meri uživanje v lepoti umetnosti in narave. Osebe z nizkim
+rezultatom se ne zanimajo za umetniška dela in naravne lepote, medtem ko osebe z
+visokim rezultatom cenijo umetnost in naravo.</p>
+        </li>
+        <li>
+            <h4>Vedoželjnost: {{ '%0.2f' % scores.get('Vedozeljnost', 0) }}</h4>
+            <p>Vedoželjnost meri tendenco k iskanju informacij in izkušenj z naravo in ljudmi. Manj
+vedoželjni se ne zanimajo za naravne in socialne znanosti, medtem ko so bolj vedoželjni
+radovedni, veliko berejo in radi potujejo.
+</p>
+        </li>
+        <li>
+            <h4>Ustvarjalnost: {{ '%0.2f' % scores.get('Ustvarjalnost', 0) }}</h4>
+            <p>Ustvarjalnost meri željo po eksperimentiranju in inovacijah. Manj ustvarjalni nimajo
+težnje po originalnem mišljenju, bolj ustvarjalni pa aktivno iščejo nove rešitve za težave
+in se izražajo skozi umetnost.</p>
+        </li>
+        <li>
+            <h4>Nekonvencionalnost: {{ '%0.2f' % scores.get('Nekonvencionalnost', 0) }}</h4>
+            <p>Nekonvencionalnost meri tendenco po sprejemanju nenavadnega. Nizke vrednosti
+imajo posamezniki, ki se izogibajo ekscentričnim in nekonformističnim ljudem, medtem
+ko posameznike z visokimi vrednostmi privlačijo radikalne ideje.</p>
+        </li>
+    </ul>
+
 {% endblock %}
