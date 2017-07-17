@@ -1,7 +1,7 @@
 import string
 import random
 
-from flask import Flask, render_template, session, flash, redirect, url_for, g
+from flask import Flask, render_template, session, flash, redirect, url_for, g, request
 from flask_bootstrap import Bootstrap
 from flask.ext.wtf import FlaskForm
 from flask.ext.login import LoginManager
@@ -46,15 +46,15 @@ def login():
         return redirect(url_for('index'))
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
+        user = User.query.filter_by(ident=form.ident.data).first()
         if user is not None:
             login_user(user, remember=True)
         else:
-            u = User(email=form.email.data)
-            db.session.add(u)
-            db.session.commit()
-            login_user(u, remember=True)
-            # flash('Neobstoječ email.')
+            # u = User(ident=form.ident.data)
+            # db.session.add(u)
+            # db.session.commit()
+            # login_user(u, remember=True)
+            flash('Neobstoječ ident.')
     return redirect(url_for('index'))
 
 
@@ -69,6 +69,27 @@ def index():
 def hexaco():
     session['answers'] = {}
     return render_template('hexaco.html')
+
+
+@app.route('/nback/<int:n>', methods=['GET'])
+@login_required
+def nback(n):
+    return render_template('nback.html', n=n)
+
+
+@app.route('/nback/<int:n>/save', methods=['POST'])
+@login_required
+def nback_save(n):
+    j = request.get_json()
+    if n == 2:
+        g.user.nback_2 = '{};{};{}'.format(j['correct'], j['failures'], j['chances'])
+        db.session.add(g.user)
+        db.session.commit()
+    if n == 3:
+        g.user.nback_3 = '{};{};{}'.format(j['correct'], j['failures'], j['chances'])
+        db.session.add(g.user)
+        db.session.commit()
+    return redirect(url_for('nback', n=n))
 
 
 @app.route('/hexaco/<int:question_number>', methods=['GET', 'POST'])
@@ -131,7 +152,7 @@ def answers():
 
 
 class LoginForm(FlaskForm):
-    email = StringField('Email', validators=[DataRequired()])
+    ident = StringField('Ident', validators=[DataRequired()])
     submit = SubmitField('Prijavi me')
 
 
@@ -145,9 +166,10 @@ class HexacoQuestionForm(FlaskForm):
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(100), index=True, unique=True)
     ident = db.Column(db.String(5), index=True, unique=True)
     hexaco = db.Column(db.String(119), nullable=True)
+    nback_2 = db.Column(db.String(120), nullable=True)
+    nback_3 = db.Column(db.String(120), nullable=True)
 
     @property
     def is_authenticated(self):

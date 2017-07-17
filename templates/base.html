@@ -23,7 +23,8 @@
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
                 <li><a href="{{ url_for('hexaco') }}">Hexaco</a></li>
-                <li><a href="#">N - back</a></li>
+                <li><a href="{{ url_for('nback', n=2) }}">2 - back</a></li>
+                <li><a href="{{ url_for('nback', n=3) }}">3 - back</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 {% if g.user.is_authenticated %}
@@ -33,7 +34,7 @@
                     <li>
                         <form class="navbar-form navbar-right" action="{{ url_for('login') }}" method="POST">
                             {{ form.csrf_token }}
-                            {{ form.email(placeholder="Email", class="form-control") }}
+                            {{ form.ident(placeholder="Ident", class="form-control") }}
                             {{ form.submit(class="btn btn-default") }}
                         </form>
                     </li>
