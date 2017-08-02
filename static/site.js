@@ -1,8 +1,8 @@
 timeout_id = undefined;
 empty = true;
 num_back = 2;
-time_empty = 1000;
-time_full = 2000;
+time_empty = 2500;
+time_full = 500;
 window.number_history = [0, 0, 0, 0];
 start_time = undefined;
 correct = 0;
@@ -11,6 +11,7 @@ chances = 0;
 run_time = 120;
 pressed = false;
 chance_to_succeed = 35;
+already_guessed = true;
 
 function end_game() {
     var infoSpan = $('#infoSpan');
@@ -36,6 +37,7 @@ function make_full(n) {
   console.log('number ' + n + ' active');
   window.number_history.push(n);
   empty = false;
+  already_guessed = false;
   toggle(n);
   timeout_id = setTimeout(function(){ make_empty(n); }, time_full);
 }
@@ -113,8 +115,8 @@ function start_game() {
 }
 
 function space_pressed() {
-  if (!empty) {
-      empty = true;
+  if (!already_guessed) {
+      already_guessed = true;
     if (check_success()) {
       correct += 1;
       console.log('correct');

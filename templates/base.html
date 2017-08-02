@@ -25,10 +25,11 @@
                 <li><a href="{{ url_for('hexaco') }}">Hexaco</a></li>
                 <li><a href="{{ url_for('nback', n=2) }}">2 - back</a></li>
                 <li><a href="{{ url_for('nback', n=3) }}">3 - back</a></li>
+                <li><a href="{{ url_for('results') }}">Rezultati</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 {% if g.user.is_authenticated %}
-                    <li><a href="{{ url_for('answers') }}">{{ g.user.email }}</a></li>
+                    <li><a href="{{ url_for('results') }}">{{ g.user.email }}</a></li>
                     <li><a href="{{ url_for('logout') }}">Odjava <span class="glyphicon glyphicon-log-out"></span></a></li>
                 {% else %}
                     <li>

@@ -22,7 +22,7 @@
         </table>
     </div>
     {% if g.user['nback_' + n|string] %}
-        <span>Already completed.</span>
+        <span>Že končano.</span>
     {% else %}
         <button class="btn btn-info" onclick="this.disabled=true; press_to_start({{ n }});" id="start-button">Start</button>
         &nbsp;<button class="btn btn-warning" onclick="space_pressed();" id="check-button">Preveri!</button>

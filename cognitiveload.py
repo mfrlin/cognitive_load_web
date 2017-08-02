@@ -99,7 +99,7 @@ def hexaco_questions(question_number):
         g.user.hexaco = '|'.join(str(session['answers'][str(i)]) for i in range(1, len(QUESTIONS) + 1))
         db.session.add(g.user)
         db.session.commit()
-        return redirect(url_for('answers'))
+        return redirect(url_for('results'))
     form = HexacoQuestionForm()
     if form.validate_on_submit():
         for i, button in enumerate([form.one, form.two, form.three, form.four, form.five], start=1):
@@ -113,16 +113,18 @@ def hexaco_questions(question_number):
     return render_template('hexaco_questions.html', question=question, form=form, question_number=question_number)
 
 
-@app.route('/answers')
+@app.route('/results')
 @login_required
-def answers():
+def results():
     def r(i):
         return [0, 5, 4, 3, 2, 1][i]
-    scores = {}
+    hexaco_scores = {}
+    two_back_scores = {}
+    three_back_scores = {}
     if g.user.hexaco is not None:
         ans = list(map(int, g.user.hexaco.split('|')))
         ans = [0] + ans
-        scores = {
+        hexaco_scores = {
             'Odkritost': (ans[6] + r(ans[30]) + ans[54]) / 3,
             'Postenost': (r(ans[12]) + ans[36] + ans[60]) / 3,
             'OgibanjePohlepu': (ans[18] + r(ans[42])) / 2,
@@ -148,7 +150,15 @@ def answers():
             'Ustvarjalnost': (ans[13] + ans[37] + r(ans[49])) / 3,
             'Nekonvencionalnost': (r(ans[19]) + ans[43] + r(ans[55])) / 3,
         }
-    return render_template('answers.html', scores=scores)
+    if g.user.nback_2 is not None:
+        correct, failures, chances = g.user.nback_2.split(';')
+        two_back_scores = {'correct': correct, 'failures': failures, 'chances': chances}
+    if g.user.nback_3 is not None:
+        correct, failures, chances = g.user.nback_3.split(';')
+        three_back_scores = {'correct': correct, 'failures': failures, 'chances': chances}
+
+    return render_template('results.html', hexaco_scores=hexaco_scores,
+                           two_back_scores=two_back_scores, three_back_scores=three_back_scores)
 
 
 class LoginForm(FlaskForm):
