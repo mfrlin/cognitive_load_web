@@ -10,7 +10,7 @@ failures = 0;
 chances = 0;
 run_time = 120;
 pressed = false;
-chance_to_succeed = 35;
+chance_to_succeed = 25;
 already_guessed = true;
 
 function end_game() {

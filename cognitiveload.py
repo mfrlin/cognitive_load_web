@@ -1,5 +1,6 @@
 import string
 import random
+import time
 
 from flask import Flask, render_template, session, flash, redirect, url_for, g, request
 from flask_bootstrap import Bootstrap
@@ -83,10 +84,12 @@ def nback_save(n):
     j = request.get_json()
     if n == 2:
         g.user.nback_2 = '{};{};{}'.format(j['correct'], j['failures'], j['chances'])
+        g.user.n2_time = int(time.time())
         db.session.add(g.user)
         db.session.commit()
     if n == 3:
         g.user.nback_3 = '{};{};{}'.format(j['correct'], j['failures'], j['chances'])
+        g.user.n3_time = int(time.time())
         db.session.add(g.user)
         db.session.commit()
     return redirect(url_for('nback', n=n))
@@ -179,6 +182,8 @@ class User(db.Model):
     ident = db.Column(db.String(5), index=True, unique=True)
     hexaco = db.Column(db.String(119), nullable=True)
     nback_2 = db.Column(db.String(120), nullable=True)
+    n2_time = db.Column(db.Integer, nullable=True)
+    n3_time = db.Column(db.Integer, nullable=True)
     nback_3 = db.Column(db.String(120), nullable=True)
 
     @property
