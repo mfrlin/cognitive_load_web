@@ -225,7 +225,7 @@ QUESTIONS = {
     17: 'Ko mi je težko ob boleči izkušnji, potrebujem nekoga, da se ob njem bolje počutim.',
     18: 'Ni mi posebej pomembno imeti mnogo denarja.',
     19: 'Mislim, da je posvečanje pozornosti radikalnim idejam potrata časa.',
-    20: 'Odločtive sprejemam bolj po občutku, kot po pazljivem razmisleku.',
+    20: 'Odločitve sprejemam bolj po občutku, kot po pazljivem razmisleku.',
     21: 'Ljudje menijo, da sem vzkipljiva oseba.',
     22: 'Večino dni sem dobro razpoložen in optimističen.',
     23: 'Na jok mi gre, kadar vidim druge jokati.',
